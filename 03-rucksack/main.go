@@ -53,10 +53,6 @@ func parseLine(line string) []Item {
 	return items
 }
 
-func split(items []Item) ([]Item, []Item) {
-	return items[:len(items)/2], items[len(items)/2:]
-}
-
 func removeDuplicates(items []Item) []Item {
 	reduced := make([]Item, 0, len(items))
 	seen := make(map[Item]struct{})
