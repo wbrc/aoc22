@@ -72,7 +72,3 @@ func numberOfStacks(line []rune) int {
 func getItemAtPosition(line []rune, pos int) rune {
 	return line[(pos)*4+1]
 }
-
-func isLetter(r rune) bool {
-	return 'A' <= r && r <= 'Z'
-}
