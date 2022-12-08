@@ -14,10 +14,17 @@ func main() {
 
 	for s := bufio.NewScanner(os.Stdin); s.Scan(); {
 		line := strings.TrimSpace(s.Text())
-		action, reaction, err := ParseLine(line)
+		action, outcome, err := ParseLine(line)
 		if err != nil {
 			log.Print(err)
 			continue
+		}
+
+		var reaction = action
+		if outcome == Win {
+			reaction = action.Killer()
+		} else if outcome == Lose {
+			reaction = action.Killer().Killer()
 		}
 
 		totalScore += Score(action, reaction)
@@ -34,6 +41,26 @@ const (
 	Rock Hand = iota + 1
 	Paper
 	Scissors
+)
+
+func (h Hand) Killer() Hand {
+	switch h {
+	case Rock:
+		return Paper
+	case Paper:
+		return Scissors
+	case Scissors:
+		return Rock
+	}
+	panic("unknown hand")
+}
+
+type Outcome int
+
+const (
+	Lose Outcome = iota
+	Draw
+	Win
 )
 
 func Score(action, reaction Hand) int {
@@ -58,7 +85,7 @@ func Score(action, reaction Hand) int {
 	return 0
 }
 
-func ParseLine(line string) (action, reaction Hand, err error) {
+func ParseLine(line string) (action Hand, outcome Outcome, err error) {
 	var a, r rune
 
 	_, err = fmt.Sscanf(line, "%c %c", &a, &r)
@@ -80,11 +107,11 @@ func ParseLine(line string) (action, reaction Hand, err error) {
 
 	switch r {
 	case 'X':
-		reaction = Rock
+		outcome = Lose
 	case 'Y':
-		reaction = Paper
+		outcome = Draw
 	case 'Z':
-		reaction = Scissors
+		outcome = Win
 	default:
 		err = fmt.Errorf("parse error: unknown typo %v", a)
 		return
